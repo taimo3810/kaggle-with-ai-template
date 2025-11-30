@@ -1,0 +1,43 @@
+{
+    "mcpServers": {
+        "perplexity": {
+            "command": "npx",
+            "args": ["-y", "@perplexity-ai/mcp-server"],
+            "env": {
+                "PERPLEXITY_API_KEY": "${PERPLEXITY_API_KEY}"
+            }
+        },
+        "kaggle": {
+            "command": "npx",
+            "args": [
+                "mcp-remote",
+                "https://www.kaggle.com/mcp",
+                "--header",
+                "Authorization: Bearer ${KAGGLE_TOKEN}"
+            ]
+        },
+        "context7": {
+			"command": "npx",
+			"args": ["-y", "@upstash/context7-mcp@latest"]
+		},
+		"serena": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"--from",
+				"git+https://github.com/oraios/serena",
+				"serena",
+				"start-mcp-server",
+				"--context",
+				"ide-assistant",
+				"--project",
+				"{{PROJECT_PATH}}",
+				"--enable-gui-log-window",
+				"false",
+				"--enable-web-dashboard",
+				"false"
+			],
+			"env": {}
+		}
+    }
+}
