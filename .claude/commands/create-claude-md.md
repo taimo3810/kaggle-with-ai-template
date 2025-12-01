@@ -107,7 +107,7 @@ Read competition info files (`COMPETITION.md`, `DATASET.md`, `METRIC.md`) and an
       - `/research`: Research topics
       - `/eda`: Run EDA
       - `/baseline`: Create baseline
-      - `/create-claude-md`: Create CLAUDE.md for the kaggle comp
+      - `/create-claude-md`: Create/update CLAUDE.md for the competition
     ```
 
 3.  **Execution**:

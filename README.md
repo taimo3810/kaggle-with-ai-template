@@ -6,7 +6,7 @@ Leverages Claude Code and MCP (Model Context Protocol) to support everything fro
 ## Features
 
 - **MCP Integration**: Automatically fetches the latest competition info using Perplexity AI
-- **Custom Commands**: Includes Slash Commands for Claude Code (`/fetch-kaggle`, `/init-kaggle`, `/eda`, `/baseline`, etc.)
+- **Custom Commands**: Includes Slash Commands for Claude Code (`/fetch-kaggle`, `/create-claude-md`, `/eda`, `/baseline`, etc.)
 - **Structured Directories**: Optimized folder structure for experiment management
 
 ## Prerequisites
@@ -53,7 +53,7 @@ Leverages Claude Code and MCP (Model Context Protocol) to support everything fro
    # Example: /fetch-kaggle titanic
 
    # 2. Initialize project memory (creates CLAUDE.md)
-   /init-kaggle
+   /create-claude-md
    ```
 
 ## Directory Structure
@@ -96,7 +96,7 @@ After fetching competition info, generate the AI assistant's context file `CLAUD
 This file defines the role, rules, and project structure for the AI.
 
 ```bash
-/init-kaggle
+/create-claude-md
 ```
 
 ### Exploratory Data Analysis (EDA)
