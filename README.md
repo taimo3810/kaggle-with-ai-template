@@ -5,7 +5,9 @@ Leverages Claude Code and MCP (Model Context Protocol) to support everything fro
 
 ## Features
 
-- **MCP Integration**: Automatically fetches the latest competition info using Perplexity AI
+- **MCP Integration**: Uses Model Context Protocol to integrate tools.
+  - **Perplexity AI**: For searching competition info and research.
+  - **Kaggle MCP**: For interacting with Kaggle datasets and competitions.
 - **Custom Commands**: Includes Slash Commands for Claude Code (`/fetch-kaggle`, `/create-claude-md`, `/eda`, `/baseline`, etc.)
 - **Structured Directories**: Optimized folder structure for experiment management
 
@@ -13,7 +15,8 @@ Leverages Claude Code and MCP (Model Context Protocol) to support everything fro
 
 - [Claude Code](https://docs.claude.com/docs/claude-code) installed
 - [uv](https://github.com/astral-sh/uv) installed
-- Perplexity API Key (for MCP server)
+- Perplexity API Key (for Perplexity MCP server)
+- Kaggle API Token (for Kaggle MCP server)
 
 ## Setup
 
@@ -38,9 +41,17 @@ Leverages Claude Code and MCP (Model Context Protocol) to support everything fro
    ```
 
 4. **Configure MCP**
-   Set up `.mcp.json` with your Perplexity API Key.
+   
+   This template uses MCP servers to enhance Claude's capabilities. Add the following to your MCP configuration file (e.g., `.mcp.json` or Claude Desktop config).
+
+   ### Perplexity MCP
+   Set up with your Perplexity API Key.
    * Note: `PERPLEXITY_API_KEY` environment variable is required in `mcpServers` settings.
 
+   ### Kaggle MCP
+   To interact with Kaggle competitions and datasets directly, set up the Kaggle MCP server.
+   Please refer to the official [Kaggle MCP Documentation](https://www.kaggle.com/docs/mcp) for installation and configuration instructions.
+   
 5. **Select Competition**
    Decide which Kaggle competition you want to participate in. You can use the URL or the competition name.
 
@@ -89,7 +100,7 @@ Example:
 ```
 
 > **Note**:
-> The `COMPETITION.md`, `DATASET.md`, and `METRIC.md` currently in the repository are examples generated for the **Santa 2025** competition.
+> The `COMPETITION.md`, `DATASET.md`, and `METRIC.md` currently in the repository are examples generated for the **Titanic** competition.
 > When using for your own competition, run the `/fetch-kaggle` command to overwrite these files.
 
 ### Initialize Project
