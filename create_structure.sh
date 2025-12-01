@@ -8,7 +8,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Directories to create.
 dirs=(
   "configs"
-  "data"
+  "data/raw"
+  "data/processed"
   "src/commons"
   "src/Solution1"
   "src/Solution2"

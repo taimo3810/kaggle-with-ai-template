@@ -17,6 +17,11 @@ Refer to the contents of the following files to understand data meaning and eval
 - @DATASET.md
 - @METRIC.md
 
+## Data Directory Structure
+
+- `data/raw/`: Original immutable data
+- `data/processed/`: Processed data features
+
 ## Instructions
 
 1.  **Generate and Run Python Script**:

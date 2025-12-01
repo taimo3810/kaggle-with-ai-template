@@ -66,6 +66,8 @@ The following directory structure is initialized by running `./create_structure.
 - `ai-src/`: **AI playground**. A dedicated space for AI to freely generate code, run experiments, and store artifacts.
 - `notebook/`: Jupyter Notebooks
 - `data/`: Datasets (usually ignored by `.gitignore`)
+  - `raw/`: Original immutable data
+  - `processed/`: Processed data features
 - `configs/`: Configuration files
 - `logs/`: Experiment logs
 - `.claude/commands/`: Custom commands for Claude Code

@@ -1,110 +1,145 @@
-# Santa 2025 - Christmas Tree Packing Challenge
+# Titanic - Machine Learning from Disaster
 
 ## Competition Overview
 
-**Organizer**: Kaggle
-**Category**: Featured
-**Prize Pool**: $50,000 USD
-**Start Date**: November 17, 2025
-**Entry Deadline**: January 23, 2026
-**Final Deadline**: January 30, 2026
-**Participants**: 1,141+ teams
-**Max Submissions Per Day**: 100
-**Max Team Size**: 5
+| Item | Value |
+|------|-------|
+| **Competition** | Titanic - Machine Learning from Disaster |
+| **Task Type** | Binary Classification |
+| **Problem Class** | Supervised Learning |
+| **Metric** | Accuracy (% of correct predictions) |
+| **Optimization Direction** | **Maximize** (higher is better) |
+| **Competition Type** | Getting Started (Rolling Leaderboard) |
+| **URL** | https://www.kaggle.com/competitions/titanic |
 
-## Background and Goal
+---
 
-### Problem Setting
+## Background and Historical Context
 
-A festive twist on the classic optimization problem: "How many Christmas trees can fit in a box?"
+The Kaggle Titanic competition centers on one of history's most notorious maritime disasters—the sinking of the RMS Titanic on April 15, 1912, which resulted in the loss of more than 1,500 lives. This legendary competition exists as a "Getting Started" initiative designed by Kaggle data scientists specifically to introduce newcomers to the platform while providing experienced competitors with a well-studied dataset for benchmarking and learning purposes.
 
-Santa Claus needs to mail Christmas tree toys to customers around the world. To minimize shipping costs, the trees must be packed into the smallest possible square box. Participants aim to find the optimal packing solution to place from 1 to 200 Christmas trees into their respective minimal square bounding boxes.
+The competition runs indefinitely with a rolling leaderboard, allowing participants to continuously submit predictions and compare their performance against other competitors in the community.
 
-### Background
+---
 
-This is a **2D Geometric Optimization Problem** with real-world applications:
+## Competition Goal
 
-- **Logistics Efficiency**: Minimizing packaging size to reduce shipping costs
-- **Manufacturing**: Optimizing material cutting efficiency
-- **Warehouse Management**: Optimal utilization of storage space
+The fundamental objective is to use machine learning to create a model that predicts which passengers survived the Titanic disaster.
 
-## Task Type
+**Task**: Given passenger information (demographics, ticket details, cabin information), predict whether each passenger survived (1) or did not survive (0).
 
-**Variant of 2D Bin Packing Problem**
+**Input**: Passenger features including:
+- Demographics (age, sex)
+- Socioeconomic indicators (ticket class, fare)
+- Family relationships (siblings/spouses, parents/children aboard)
+- Travel information (embarkation port, cabin, ticket number)
 
-- **Problem Class**: NP-hard
-- **Optimization Type**: Continuous optimization (position and rotation)
-- **Constrained Optimization**: With collision avoidance constraints
+**Output**: Binary prediction (0 = did not survive, 1 = survived)
 
-### Specific Task
+---
 
-1. **Input**: 1 to 200 identically shaped Christmas trees
-2. **Output**: Position (x, y coordinates) and rotation angle for each tree
-3. **Goal**: Find the smallest square bounding box containing all trees
-4. **Scale**: Solve 200 independent optimization problems, ranging from 1 to 200 trees
+## Key Constraints and Rules
 
-## Key Constraints
+### Data Rules
+- Participants must accept competition rules before downloading data
+- The training dataset contains 891 passengers with known survival outcomes
+- The test dataset contains 418 passengers without survival labels
+- External data usage is generally permitted but may have specific restrictions
 
-### Geometric Constraints
+### Submission Rules
+- **Daily Submission Limit**: Up to 10 submissions per day (more generous than standard competitions)
+- **Submission Format**: CSV file with exactly 2 columns (PassengerId, Survived)
+- **Prediction Values**: Must be integers (0 or 1), not probabilities
+- **File Size**: Must contain exactly 418 predictions (one per test passenger)
 
-- **Tree Shape**: All trees have identical shape and size
-- **2D Problem**: Placement on a 2D plane, not 3D
-- **Square Boundary**: Must fit into a square box, not a rectangle
-- **Rotatable**: Each tree can be rotated at any angle
+### Leaderboard Rules
+- Rolling leaderboard format (no fixed end date)
+- Submissions older than 2 months are automatically invalidated
+- Teams removed from leaderboard may rejoin with new submissions
+- Team size does not affect daily submission limits
 
-### Placement Constraints
+### Team Rules
+- Each participant starts as a single-person team
+- Teams can merge or invite additional members
+- Team mergers must occur before any applicable deadlines
 
-- **Non-overlapping**: Trees must not overlap
-- **Within Boundary**: All trees must fit completely within the square boundary
-- **Continuous Coordinates**: Placement in a continuous coordinate space, not grid-based
+---
 
-### Competition Rules
+## Historical Survival Patterns
 
-- **Submission Format**: CSV format specifying position and rotation for each tree
-- **Submission Limit**: Max 100 per day
-- **Team**: Max 5 members
-- **Code Sharing**: Sharing simple reproduction code for high-scoring submissions is prohibited
+Understanding the historical context is crucial for feature engineering:
 
-## Prizes
+1. **"Women and Children First" Policy**
+   - Females: ~74% survival rate
+   - Males: ~16% survival rate
+   - Children (0-10 years): ~53% survival rate
+   - Elderly (60-70 years): ~23% survival rate
 
-| Rank | Prize |
-|------|------|
-| 1st | $12,000 |
-| 2nd | $10,000 |
-| 3rd | $10,000 |
-| 4th | $8,000 |
-| **Rudolph Prize** | $10,000 |
+2. **Class-Based Disparities**
+   - First-class females: ~100% survival
+   - Second/Third-class males: ~10% survival
+   - First-class passengers had better access to information and lifeboats
 
-**Rudolph Prize**: A special prize awarded to the participant who holds the 1st place on the leaderboard for the longest duration during the competition.
+3. **Family Dynamics**
+   - Passengers with family sizes of 2-4 had higher survival rates
+   - Solo travelers and very large families had lower survival rates
 
-## Recommended Approaches
+---
 
-### Algorithmic Approaches
+## Performance Benchmarks
 
-1. **Simulated Annealing**
-   - Capable of escaping local optima
-   - Suitable for continuous optimization
+| Approach | Expected Accuracy |
+|----------|------------------|
+| Random Baseline | ~50% |
+| Sex-only Model (all females survive) | ~76.5% |
+| Basic Features (sex, class, age) | 77-79% |
+| Thoughtful Feature Engineering | 80-81% |
+| Advanced Ensemble Methods | 82-84% |
+| Top Leaderboard Scores | 83-85% |
 
-2. **Deterministic Tiling**
-   - Utilize known efficient patterns like hexagonal packing
-   - Effective for large-scale placements
+**Realistic Target**: ~80% accuracy without excessive optimization
 
-3. **Genetic Algorithm**
-   - Explores diverse solutions
-   - Suitable for combinatorial optimization
+---
 
-4. **Greedy + Improvement**
-   - Use as a basic baseline
-   - Difficult to achieve competitive results alone
+## Recommended Approach
 
-### Technical Considerations
+### Algorithm Comparison (from research)
 
-- **Collision Detection**: Efficient polygon collision detection algorithm required
-- **Numerical Precision**: Watch out for floating-point precision
-- **Scalability**: Algorithm design that works effectively from 1 to 200 trees
+| Algorithm | Accuracy | False Discovery Rate |
+|-----------|----------|---------------------|
+| Logistic Regression | ~93.5% (CV) | 8.6% |
+| Decision Tree | ~93.1% (CV) | 9.1% |
+| Naïve Bayes | ~91.4% (CV) | 15.5% |
+| Random Forest | ~91.9% (CV) | 10.7% |
+| XGBoost | 81%+ (Test) | Varies |
+
+*Note: CV accuracy often differs from test set accuracy due to overfitting*
+
+### Recommended Workflow
+
+1. **Exploratory Data Analysis**: Understand feature distributions and survival patterns
+2. **Feature Engineering**: Create title extraction, family size, age binning, deck features
+3. **Missing Value Handling**: Impute Age (~20% missing), handle Embarked, consider Cabin strategy
+4. **Model Training**: Start with Logistic Regression/Decision Trees, progress to ensembles
+5. **Cross-Validation**: Use k-fold CV to estimate generalization performance
+6. **Hyperparameter Tuning**: Grid search with cross-validation
+7. **Submission**: Generate predictions and format according to requirements
+
+---
+
+## Key Success Factors
+
+1. **Feature Engineering > Algorithm Complexity**: Thoughtful feature creation often matters more than sophisticated algorithms
+2. **Understand the Domain**: Historical knowledge about the disaster improves predictions
+3. **Prevent Overfitting**: High CV accuracy (~95%) often means poor test performance
+4. **Validate Properly**: Cross-validation estimates should match test performance
+5. **Iterate Systematically**: Use the generous submission limit to test hypotheses
+
+---
 
 ## Reference Links
 
-- [Kaggle Competition Page](https://www.kaggle.com/competitions/santa-2025)
-- [Getting Started Notebook](https://www.kaggle.com/code/inversion/santa-2025-getting-started)
-- [Evaluation Metric](https://www.kaggle.com/code/metric/santa-2025-metric)
+- [Kaggle Competition Page](https://www.kaggle.com/competitions/titanic)
+- [Official Titanic Tutorial](https://www.kaggle.com/code/alexisbcook/titanic-tutorial)
+- [Getting Started Guide](https://www.kaggle.com/code/alexisbcook/getting-started-with-titanic)
+- [Advanced Feature Engineering Tutorial](https://www.kaggle.com/code/gunesevitan/titanic-advanced-feature-engineering-tutorial)

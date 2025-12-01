@@ -1,189 +1,302 @@
-# Santa 2025 - Dataset Specification
+# Titanic - Dataset Specification
 
 ## Dataset Overview
 
 | Item | Value |
-|------|-----|
-| Number of files | 1 |
-| File format | CSV |
-| Total size | Approx. 670KB |
-| Number of columns | 4 |
+|------|-------|
+| **Number of Files** | 3 (train.csv, test.csv, gender_submission.csv) |
+| **Training Samples** | 891 passengers |
+| **Test Samples** | 418 passengers |
+| **Features** | 11 columns (excluding target) |
+| **Target Variable** | Survived (binary: 0/1) |
 
-## Geometric Specification of Christmas Trees
+---
 
-### Basic Dimensions
+## File Structure
 
-```
-Tree Width: 0.7 units
-Tree Height: 1.0 units
-Trunk Dimensions: 0.2 units
-```
+### train.csv (Training Dataset)
 
-### Tree Shape
+Contains 891 passengers with known survival outcomes. Used for model training and validation.
 
-The Christmas tree is represented as a 2D polygon. Typical shape:
+| Column | Present | Description |
+|--------|---------|-------------|
+| PassengerId | Yes | Unique identifier |
+| Survived | Yes | Target variable |
+| All features | Yes | See feature descriptions below |
 
-- **Body**: Triangle or tiered triangles (conifer silhouette)
-- **Trunk**: Rectangular base
+### test.csv (Test Dataset)
 
-The area of a single tree is approximately **0.245625 square units**.
+Contains 418 passengers without survival labels. Used for generating predictions.
 
-### Coordinate System
+| Column | Present | Description |
+|--------|---------|-------------|
+| PassengerId | Yes | Unique identifier |
+| Survived | **No** | Must be predicted |
+| All features | Yes | See feature descriptions below |
 
-- **Origin**: Center position of the tree (usually top center of the trunk)
-- **Coordinate Space**: Continuous 2D plane
-- **Unit**: Dimensionless
+### gender_submission.csv (Sample Submission)
 
-## Submission File Format
-
-### sample_submission.csv
-
-The submission file consists of the following 4 columns:
-
-| Column Name | Data Type | Description |
-|----------|----------|------|
-| `problem_tree_index` | String | Composite key of problem number and tree index |
-| `x` | Float | X-coordinate of the tree |
-| `y` | Float | Y-coordinate of the tree |
-| `rotation_angle` | Float | Rotation angle of the tree (in degrees) |
-
-### problem_tree_index Structure
-
-```
-{problem_number}_{tree_index}
-
-Example:
-1_0    -> 1st tree of the 1-tree problem
-5_2    -> 3rd tree of the 5-tree problem (0-indexed)
-200_199 -> 200th tree of the 200-tree problem
-```
-
-### Data Example
+Example submission file showing the correct format.
 
 ```csv
-problem_tree_index,x,y,rotation_angle
-1_0,0.5,0.5,0
-2_0,0.35,0.5,0
-2_1,0.85,0.5,0
-3_0,0.35,0.35,0
-3_1,0.85,0.35,0
-3_2,0.6,0.85,0
+PassengerId,Survived
+892,0
+893,1
+894,0
 ...
 ```
 
-## Problem Structure
+---
 
-### Number of Problems
+## Feature Descriptions
 
-There are a total of **200 independent optimization problems**:
+### Identifier
 
-| Problem Number | Number of Trees | Submission Rows |
-|----------|------------|----------|
-| 1 | 1 tree | 1 row |
-| 2 | 2 trees | 2 rows |
-| 3 | 3 trees | 3 rows |
-| ... | ... | ... |
-| 200 | 200 trees | 200 rows |
+| Column | Data Type | Description |
+|--------|-----------|-------------|
+| **PassengerId** | Integer | Unique identifier for each passenger (892-1309 in test set) |
 
-**Total Rows**: 1 + 2 + 3 + ... + 200 = **20,100 rows**
+### Target Variable
 
-### Independence of Each Problem
+| Column | Data Type | Values | Description |
+|--------|-----------|--------|-------------|
+| **Survived** | Integer | 0, 1 | 0 = Did not survive, 1 = Survived |
 
-- Each problem is evaluated independently
-- No need to share solutions between problems
-- Different algorithms can be used for each problem
+### Demographic Features
 
-## Tree Placement Parameters
+| Column | Data Type | Values | Description |
+|--------|-----------|--------|-------------|
+| **Sex** | Categorical | male, female | Biological sex of the passenger |
+| **Age** | Float | 0.42-80 | Age in years (fractional for infants < 1 year) |
 
-### Position Specification (x, y)
+### Socioeconomic Features
 
-- **x-coordinate**: Horizontal position
-- **y-coordinate**: Vertical position
-- **Coordinate Range**: Dependent on bounding box size (unlimited)
-- **Precision**: Floating-point precision (double)
+| Column | Data Type | Values | Description |
+|--------|-----------|--------|-------------|
+| **Pclass** | Integer | 1, 2, 3 | Passenger class (1st, 2nd, 3rd) - proxy for socioeconomic status |
+| **Fare** | Float | 0-512.33 | Ticket price paid in British pounds |
 
-### Rotation Angle (rotation_angle)
+### Family Features
 
-- **Unit**: Degrees
-- **Range**: 0° to 360° (or any real value)
-- **Rotation Center**: Reference point of the tree (center coordinate)
-- **Positive Direction**: Counter-clockwise (standard mathematical convention)
+| Column | Data Type | Values | Description |
+|--------|-----------|--------|-------------|
+| **SibSp** | Integer | 0-8 | Number of siblings/spouses aboard |
+| **Parch** | Integer | 0-6 | Number of parents/children aboard |
 
-### Effect of Rotation
+### Travel Features
 
-Rotation transforms each vertex coordinate of the tree as follows:
+| Column | Data Type | Values | Description |
+|--------|-----------|--------|-------------|
+| **Ticket** | String | Various | Ticket number (alphanumeric) |
+| **Cabin** | String | Various | Cabin number (first letter indicates deck) |
+| **Embarked** | Categorical | C, Q, S | Port of embarkation |
 
+#### Embarkation Ports
+- **C** = Cherbourg (France)
+- **Q** = Queenstown (Ireland, now Cobh)
+- **S** = Southampton (England)
+
+---
+
+## Data Quality Issues
+
+### Missing Values
+
+| Column | Training Set | Test Set | Strategy |
+|--------|-------------|----------|----------|
+| **Age** | 177 (~20%) | 86 (~21%) | Imputation required (median, mean by group) |
+| **Cabin** | 687 (~77%) | 327 (~78%) | Drop or extract deck letter |
+| **Embarked** | 2 (~0.2%) | 0 | Mode imputation (S) |
+| **Fare** | 0 | 1 (~0.2%) | Median imputation |
+
+### Imputation Strategies
+
+#### Age Imputation
+```python
+# Option 1: Simple median
+df['Age'].fillna(df['Age'].median(), inplace=True)
+
+# Option 2: Gender-specific median
+# Male average: ~30.7 years
+# Female average: ~27.9 years
+df.loc[(df['Age'].isnull()) & (df['Sex'] == 'male'), 'Age'] = 30.7
+df.loc[(df['Age'].isnull()) & (df['Sex'] == 'female'), 'Age'] = 27.9
+
+# Option 3: Group by Pclass and Sex
+df['Age'] = df.groupby(['Pclass', 'Sex'])['Age'].transform(
+    lambda x: x.fillna(x.median())
+)
 ```
-x' = x * cos(θ) - y * sin(θ)
-y' = x * sin(θ) + y * cos(θ)
+
+#### Cabin Handling
+```python
+# Option 1: Drop column (77% missing)
+df.drop('Cabin', axis=1, inplace=True)
+
+# Option 2: Extract deck letter
+df['Deck'] = df['Cabin'].str[0]
+df['HasCabin'] = df['Cabin'].notna().astype(int)
 ```
 
-Where θ is the rotation angle (in radians).
+---
 
-## Data Notes
+## Feature Engineering Opportunities
 
-### Collision Detection
+### Title Extraction (from Name)
 
-- **Important**: Submitted tree placements are checked for collisions
-- If there is an overlap, it may be treated as an invalid solution
-- Computational geometry libraries (like Shapely) are useful for collision detection
-
-### Numerical Precision Issues
-
-- Beware of errors due to floating-point arithmetic
-- Potential impact on collision detection in boundary cases
-- Setting an appropriate tolerance is important
-
-### Bounding Box Calculation
-
-The final bounding box is calculated as follows:
-
-1. Transform all vertices of each tree by rotation and translation
-2. Get min/max x-coordinates and min/max y-coordinates of all vertices
-3. Side length of square bounding box = max(x_max - x_min, y_max - y_min)
-
-### Scaling Considerations
-
-- Small-scale problems (1-10 trees): Manual optimization is possible
-- Medium-scale problems (11-50 trees): Leveraging patterns is effective
-- Large-scale problems (51-200 trees): Algorithmic approach is essential
-
-## Visualization and Debugging
-
-### Recommended Tools
-
-- **Matplotlib**: 2D visualization in Python
-- **Shapely**: Geometric operations and collision detection
-- **Jupyter Notebook**: Interactive development
-
-### Visualization Example
+Extract honorific titles from the Name column:
 
 ```python
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-import numpy as np
+df['Title'] = df['Name'].str.extract(r' ([A-Za-z]+)\.')
 
-def visualize_packing(trees, bounding_box_size):
-    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
-
-    for tree in trees:
-        # Draw tree polygon
-        polygon = create_tree_polygon(tree.x, tree.y, tree.rotation)
-        patch = Polygon(polygon, fill=True, alpha=0.5, edgecolor='green')
-        ax.add_patch(patch)
-
-    # Draw bounding box
-    ax.set_xlim(0, bounding_box_size)
-    ax.set_ylim(0, bounding_box_size)
-    ax.set_aspect('equal')
-    plt.show()
+# Common titles and their survival rates:
+# Mr.      - ~16% survival (adult males)
+# Mrs.     - ~79% survival (married females)
+# Miss.    - ~70% survival (unmarried females)
+# Master.  - ~57% survival (young males)
+# Rare titles: Dr., Rev., Col., etc.
 ```
 
-## Reference Implementations
+### Family Size
 
-Starter notebooks available on Kaggle:
+Combine SibSp and Parch:
 
-- [Santa 2025 Getting Started](https://www.kaggle.com/code/inversion/santa-2025-getting-started)
-- [Santa 2025 Metric](https://www.kaggle.com/code/metric/santa-2025-metric)
-- [Deterministic Tiling](https://www.kaggle.com/code/dedquoc/santa-2025-ctpc-deterministic-tiling)
-- [Extra Trees Handling](https://www.kaggle.com/code/armanzhalgasbayev/ctpc-extra-trees-handling-santa-2025)
+```python
+df['FamilySize'] = df['SibSp'] + df['Parch'] + 1
+df['IsAlone'] = (df['FamilySize'] == 1).astype(int)
+
+# Optimal family size: 2-4 members
+# Solo travelers and large families (>4) have lower survival
+```
+
+### Age Binning
+
+Convert continuous age to categorical:
+
+```python
+bins = [0, 12, 18, 35, 60, 100]
+labels = ['Child', 'Teenager', 'YoungAdult', 'Adult', 'Senior']
+df['AgeGroup'] = pd.cut(df['Age'], bins=bins, labels=labels)
+```
+
+### Fare Binning
+
+Convert fare to ticket class tiers:
+
+```python
+df['FareBand'] = pd.qcut(df['Fare'], 4, labels=['Low', 'Medium', 'High', 'VeryHigh'])
+```
+
+### Deck Feature
+
+Extract deck from cabin number:
+
+```python
+# Deck levels (top to bottom): A, B, C, D, E, F, G
+# Higher decks (A, B, C) had better access to lifeboats
+df['Deck'] = df['Cabin'].str[0]
+```
+
+---
+
+## Data Distribution Summary
+
+### Training Set Class Balance
+
+| Survived | Count | Percentage |
+|----------|-------|------------|
+| 0 (Died) | 549 | 61.6% |
+| 1 (Survived) | 342 | 38.4% |
+
+### Passenger Class Distribution
+
+| Pclass | Count | Survival Rate |
+|--------|-------|---------------|
+| 1 (First) | 216 | 62.96% |
+| 2 (Second) | 184 | 47.28% |
+| 3 (Third) | 491 | 24.24% |
+
+### Gender Distribution
+
+| Sex | Count | Survival Rate |
+|-----|-------|---------------|
+| Male | 577 | 18.89% |
+| Female | 314 | 74.20% |
+
+### Embarkation Distribution
+
+| Embarked | Count | Survival Rate |
+|----------|-------|---------------|
+| S (Southampton) | 644 | 33.70% |
+| C (Cherbourg) | 168 | 55.36% |
+| Q (Queenstown) | 77 | 38.96% |
+
+---
+
+## Submission Format
+
+### Required Columns
+
+| Column | Data Type | Description |
+|--------|-----------|-------------|
+| PassengerId | Integer | Must match test.csv PassengerId |
+| Survived | Integer | Predicted value (0 or 1) |
+
+### Example Submission
+
+```csv
+PassengerId,Survived
+892,0
+893,1
+894,0
+895,0
+896,1
+...
+1309,0
+```
+
+### Submission Requirements
+
+1. **Exactly 418 rows** (one per test passenger)
+2. **Header row required**: `PassengerId,Survived`
+3. **Integer predictions only**: 0 or 1 (not probabilities)
+4. **No index column**: Use `index=False` when saving
+
+```python
+submission = pd.DataFrame({
+    'PassengerId': test_df['PassengerId'],
+    'Survived': predictions
+})
+submission.to_csv('submission.csv', index=False)
+```
+
+---
+
+## Data Loading Example
+
+```python
+import pandas as pd
+
+# Load datasets
+train_df = pd.read_csv('train.csv')
+test_df = pd.read_csv('test.csv')
+
+# Quick exploration
+print(f"Training set shape: {train_df.shape}")
+print(f"Test set shape: {test_df.shape}")
+print(f"\nMissing values in training set:")
+print(train_df.isnull().sum())
+
+# Separate features and target
+X = train_df.drop(['Survived', 'PassengerId'], axis=1)
+y = train_df['Survived']
+```
+
+---
+
+## Reference Links
+
+- [Kaggle Data Page](https://www.kaggle.com/c/titanic/data)
+- [Data Dictionary](https://www.kaggle.com/c/titanic/data)
+- [Advanced Feature Engineering Tutorial](https://www.kaggle.com/code/gunesevitan/titanic-advanced-feature-engineering-tutorial)
+- [Missing Value Imputation Tutorial](https://www.kaggle.com/code/allohvk/titanic-missing-age-imputation-tutorial-advanced)
