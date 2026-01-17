@@ -18,58 +18,50 @@ Leverages Claude Code and MCP (Model Context Protocol) to support everything fro
 - Perplexity API Key (for Perplexity MCP server)
 - Kaggle API Token (for Kaggle MCP server)
 
-## Setup
+## Quick Start
 
 1. **Clone & Install**
    Clone the repository or use it as a template.
 
-2. **Install Dependencies**
-   Install Python dependencies using uv:
+2. **Run Setup Command**
+   In Claude Code, run the setup command with your competition URL:
    ```bash
-   uv sync
+   /setup [competition-url-or-name]
    ```
 
-   To add new dependencies during development, use:
+   Example:
    ```bash
-   uv add <package_name>
+   /setup https://www.guruguru.science/competitions/31
+   /setup titanic
    ```
 
-3. **Initialize Directories**
-   Run the helper script to create the necessary directory structure:
-   ```bash
-   ./create_structure.sh
-   ```
+   This will automatically:
+   - Install Python dependencies via `uv sync`
+   - Create the necessary directory structure (`src/`, `data/`, `ai-src/`, etc.)
+   - Fetch competition info and create `COMPETITION.md`, `DATASET.md`, `METRIC.md`
+   - Generate AI context file `CLAUDE.md`
 
-4. **Configure MCP**
-   
-   This template uses MCP servers to enhance Claude's capabilities. Add the following to your MCP configuration file (e.g., `.mcp.json` or Claude Desktop config).
+3. **Download Data**
+   Download competition data to `data/raw/` directory.
 
-   ### Perplexity MCP
-   Set up with your Perplexity API Key.
-   * Note: `PERPLEXITY_API_KEY` environment variable is required in `mcpServers` settings.
+4. **Start Working**
+   You're ready to go! Use `/eda` to explore data or `/baseline` to create a baseline solution.
 
-   ### Kaggle MCP
-   To interact with Kaggle competitions and datasets directly, set up the Kaggle MCP server.
-   Please refer to the official [Kaggle MCP Documentation](https://www.kaggle.com/docs/mcp) for installation and configuration instructions.
-   
-5. **Select Competition**
-   Decide which Kaggle competition you want to participate in. You can use the URL or the competition name.
+## MCP Configuration (Optional)
 
-6. **Initialize Competition**
-   Run the following commands in Claude Code to start the competition:
+This template uses MCP servers to enhance Claude's capabilities. Add the following to your MCP configuration file (e.g., `.mcp.json` or Claude Desktop config).
 
-   ```bash
-   # 1. Fetch competition info (creates COMPETITION.md, etc.)
-   /fetch-kaggle [competition-name-or-url]
-   # Example: /fetch-kaggle titanic
+### Perplexity MCP
+Set up with your Perplexity API Key.
+* Note: `PERPLEXITY_API_KEY` environment variable is required in `mcpServers` settings.
 
-   # 2. Initialize project memory (creates CLAUDE.md)
-   /create-claude-md
-   ```
+### Kaggle MCP
+To interact with Kaggle competitions and datasets directly, set up the Kaggle MCP server.
+Please refer to the official [Kaggle MCP Documentation](https://www.kaggle.com/docs/mcp) for installation and configuration instructions.
 
 ## Directory Structure
 
-The following directory structure is initialized by running `./create_structure.sh`:
+The following directory structure is initialized by running `/setup`:
 
 - `src/`: **Human-authored code**. Primary solutions and shared utilities reside here. AI should prioritize reading from here and avoid destructive edits unless explicitly instructed.
   - `commons/`: Common utilities
@@ -85,28 +77,31 @@ The following directory structure is initialized by running `./create_structure.
 
 ## Slash Commands for Claude Code
 
+### Setup (All-in-One)
+
+Set up the entire project for a competition in one command:
+
+```bash
+/setup [competition-url-or-name]
+```
+
+Example:
+```bash
+/setup https://www.guruguru.science/competitions/31
+/setup titanic
+```
+
 ### Fetch Competition Info
 
-Run the following command in Claude Code to research the specified competition (Overview, Dataset, Metric) and automatically generate documentation (`COMPETITION.md`, `DATASET.md`, `METRIC.md`).
+If you need to update competition info separately:
 
 ```bash
 /fetch-kaggle [competition-name-or-url]
 ```
 
-Example:
-```bash
-/fetch-kaggle titanic
-/fetch-kaggle https://www.kaggle.com/c/house-prices-advanced-regression-techniques
-```
+### Update CLAUDE.md
 
-> **Note**:
-> The `COMPETITION.md`, `DATASET.md`, and `METRIC.md` currently in the repository are examples generated for the **Titanic** competition.
-> When using for your own competition, run the `/fetch-kaggle` command to overwrite these files.
-
-### Initialize Project
-
-After fetching competition info, generate the AI assistant's context file `CLAUDE.md`.
-This file defines the role, rules, and project structure for the AI.
+Regenerate the AI assistant's context file:
 
 ```bash
 /create-claude-md
@@ -114,7 +109,7 @@ This file defines the role, rules, and project structure for the AI.
 
 ### Exploratory Data Analysis (EDA)
 
-Once the competition overview files are generated, execute EDA on data files and create a Notebook.
+Execute EDA on data files and create a Notebook:
 
 ```bash
 /eda [data-file-path]
@@ -127,8 +122,7 @@ Example:
 
 ### Research Topics
 
-Research specific topics, papers, or methods relevant to the competition to find improvement ideas.
-If executed without arguments, it automatically generates research topics from `COMPETITION.md`.
+Research specific topics, papers, or methods relevant to the competition:
 
 ```bash
 /research [topic-or-question]
@@ -138,12 +132,11 @@ Example:
 ```bash
 /research # Auto-detect topics from COMPETITION.md
 /research "SOTA models for 2D bin packing"
-/research "Attention mechanism for time series forecasting"
 ```
 
 ### Create Baseline
 
-Create baseline code for training (`train.py`) and inference (`inference.py`) based on competition and dataset info.
+Create baseline code for training and inference:
 
 ```bash
 /baseline [solution-name]
@@ -152,4 +145,12 @@ Create baseline code for training (`train.py`) and inference (`inference.py`) ba
 Example:
 ```bash
 /baseline Solution1
+```
+
+## Adding Dependencies
+
+To add new Python packages during development:
+
+```bash
+uv add <package_name>
 ```
