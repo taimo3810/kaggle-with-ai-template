@@ -32,9 +32,10 @@ Predict which passengers survived the Titanic disaster using machine learning. G
 ```text
 kaggle-with-ai-template/
 ├── CLAUDE.md              # This guidance file for Claude Code
-├── COMPETITION.md         # Competition overview and rules
-├── DATASET.md             # Dataset and submission format details
-├── METRIC.md              # Evaluation metric explanation
+├── .references/           # Reference documents
+│   ├── COMPETITION.md     # Competition overview and rules
+│   ├── DATASET.md         # Dataset and submission format details
+│   └── METRIC.md          # Evaluation metric explanation
 ├── pyproject.toml         # Python project dependencies
 ├── README.md              # Project documentation
 ├── create_structure.sh    # Project scaffolding script
@@ -136,9 +137,9 @@ PassengerId,Survived
   - Use `serena` mcp when reading files to ensure proper handling.
 
 - **Absolute Requirement**: Before starting any task, ALWAYS review:
-  - `COMPETITION.md` - Competition rules and historical context
-  - `DATASET.md` - Feature descriptions and missing value details
-  - `METRIC.md` - Accuracy metric and optimization strategies
+  - `.references/COMPETITION.md` - Competition rules and historical context
+  - `.references/DATASET.md` - Feature descriptions and missing value details
+  - `.references/METRIC.md` - Accuracy metric and optimization strategies
 
 - **Directory Roles**:
   - `ai-src/`: **AI Playground**. You have full freedom to create, edit, and experiment here. Use this for tasks unless instructed otherwise.

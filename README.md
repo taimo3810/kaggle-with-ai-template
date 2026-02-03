@@ -38,7 +38,7 @@ Leverages Claude Code and MCP (Model Context Protocol) to support everything fro
    This will automatically:
    - Install Python dependencies via `uv sync`
    - Create the necessary directory structure (`src/`, `data/`, `ai-src/`, etc.)
-   - Fetch competition info and create `COMPETITION.md`, `DATASET.md`, `METRIC.md`
+   - Fetch competition info and create `.references/COMPETITION.md`, `.references/DATASET.md`, `.references/METRIC.md`
    - Generate AI context file `CLAUDE.md`
 
 3. **Download Data**
@@ -130,7 +130,7 @@ Research specific topics, papers, or methods relevant to the competition:
 
 Example:
 ```bash
-/research # Auto-detect topics from COMPETITION.md
+/research # Auto-detect topics from .references/COMPETITION.md
 /research "SOTA models for 2D bin packing"
 ```
 
