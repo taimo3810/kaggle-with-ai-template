@@ -8,29 +8,32 @@ This file provides guidance to Claude Code (claude.ai/code) for this repository.
 
 | Item | Value |
 |------|-------|
-| **Competition** | Titanic - Machine Learning from Disaster |
-| **Task Type** | Binary Classification |
-| **Problem Class** | Supervised Learning |
-| **Metric** | Accuracy (% of correct predictions) |
+| **Competition** | BirdCLEF+ 2026 |
+| **Task Type** | Multilabel Classification (Audio) |
+| **Problem Class** | Acoustic Species Identification |
+| **Metric** | Macro-averaged ROC-AUC (with class skipping) |
 | **Optimization Direction** | **Maximize** (higher is better) |
-| **Competition Type** | Getting Started (Rolling Leaderboard) |
+| **Competition Type** | Research ($50,000 USD prize) |
+| **Deadline** | 2026-06-03 |
+| **Daily Submissions** | 5 |
+| **Submission Type** | Kernels-only (code competition) |
 
 ### Problem Description
-Predict which passengers survived the Titanic disaster using machine learning. Given passenger information (demographics, ticket details, cabin information), classify each passenger as survived (1) or not survived (0).
+Identify calling species (birds, amphibians, mammals, reptiles, insects) in audio recordings from the Pantanal region of South America. Given 60-second soundscape recordings split into 5-second segments, predict the probability of each species being present in each segment. Predictions are evaluated using macro-averaged ROC-AUC that skips species not present in the ground truth.
 
 ### Key Constraints
-- Training set: 891 passengers with known survival outcomes
-- Test set: 418 passengers without survival labels
-- Daily submission limit: 10 submissions per day
-- Predictions must be integers (0 or 1), not probabilities
-- Submissions older than 2 months are automatically invalidated
+- Training set: ~35,549 labeled audio recordings (~46,207 .ogg files, ~16.1 GB)
+- Test set: Soundscape recordings available only during notebook execution
+- 258 target species (+ 1 row_id column = 259 columns in submission)
+- Kernels-only: must run in Kaggle Notebooks (~5 hour runtime limit)
+- Predictions must be probabilities (0-1), not binary values
 
 ---
 
 ## Project Structure
 
 ```text
-kaggle-with-ai-template/
+kaggle-birdclef2026/
 ├── CLAUDE.md              # This guidance file for Claude Code
 ├── .references/           # Reference documents
 │   ├── COMPETITION.md     # Competition overview and rules
@@ -44,7 +47,9 @@ kaggle-with-ai-template/
 │   ├── Solution1/         # First solution implementation
 │   └── Solution2/         # Second solution implementation
 ├── notebook/              # Jupyter notebooks for exploration
-├── data/                  # Dataset location (train.csv, test.csv, gender_submission.csv)
+├── data/                  # Dataset location
+│   ├── raw/               # Raw downloaded data
+│   └── processed/         # Processed/feature-engineered data
 ├── configs/               # Configuration files
 ├── logs/                  # Experiment logs
 └── ai-src/                # AI-generated task artifacts
@@ -54,79 +59,56 @@ kaggle-with-ai-template/
 
 ## Role Definition
 
-You are a Kaggle Grandmaster specialized in **Tabular Classification** and **Feature Engineering**.
+You are a Kaggle Grandmaster specialized in **Audio Classification** and **Bioacoustics**.
 Your expertise includes:
-- Classical ML algorithms: Logistic Regression, Random Forest, XGBoost, LightGBM
-- Feature engineering for structured data: categorical encoding, missing value imputation
-- Handling imbalanced datasets and class distribution issues
-- Cross-validation strategies: K-Fold, Stratified K-Fold
-- Ensemble methods: Voting, Stacking, Blending
-- Optimizing accuracy metrics while avoiding overfitting
-- Domain knowledge application (historical context of Titanic disaster)
+- Audio signal processing: mel-spectrograms, MFCCs, spectrogram augmentation
+- Modern CNN backbones for audio: EfficientNet, ConvNeXt, ResNet on spectrograms
+- Pre-trained audio models: BirdNET, Perch, PANNs, AST (Audio Spectrogram Transformer)
+- Data augmentation for audio: mixup, SpecAugment, time/frequency masking, noise injection
+- Handling class imbalance in multilabel settings
+- Cross-validation strategies for audio data (site-aware, time-aware splits)
+- Ensemble methods and post-processing for probability calibration
+- Optimizing macro-averaged ROC-AUC
+- Efficient training/inference under Kaggle notebook constraints
 
 ---
 
 ## Technical Recommendations
 
-### Key Features by Importance
-1. **Sex** - Very High impact (~74% vs ~16% survival rate)
-2. **Pclass** - High impact (1st class: 63%, 3rd class: 24%)
-3. **Age** - High impact (children had higher survival rates)
-4. **Fare** - Medium impact (correlated with class)
-5. **FamilySize** - Medium impact (optimal size: 2-4 members)
-
-### Feature Engineering Opportunities
-- **Title Extraction**: Extract Mr., Mrs., Miss., Master. from Name
-- **Family Size**: Combine SibSp + Parch + 1
-- **Age Binning**: Child, Teenager, YoungAdult, Adult, Senior
-- **Deck Feature**: Extract from Cabin (first letter)
-- **IsAlone**: Binary feature for solo travelers
-
-### Missing Value Strategy
-| Column | Missing % | Recommended Strategy |
-|--------|-----------|---------------------|
-| Age | ~20% | Group-based median (Pclass, Sex) |
-| Cabin | ~77% | Extract deck or create HasCabin flag |
-| Embarked | ~0.2% | Mode imputation (S) |
-| Fare | ~0.2% (test) | Median imputation |
-
-### Performance Benchmarks
-| Approach | Expected Accuracy |
-|----------|------------------|
-| Random Baseline | ~50% |
-| Sex-only Model | ~76.5% |
-| Basic Features | 77-79% |
-| Good Feature Engineering | 80-81% |
-| Top Leaderboard | 83-85% |
+### Approach Overview
+1. **Audio Preprocessing**: Convert .ogg to mel-spectrograms (typical: SR=32000, n_mels=128, hop_length=320)
+2. **Model Architecture**: CNN backbone (EfficientNet-B0/B2) or pre-trained audio model (BirdNET, Perch)
+3. **Training**: 5-second clips from training audio, multilabel BCE loss
+4. **Inference**: Process 60s test soundscapes as 12 x 5s segments, predict per-segment probabilities
 
 ### Useful Libraries
 ```python
+import librosa
+import soundfile as sf
+import torch
+import torchaudio
+import timm
 import pandas as pd
-from sklearn.model_selection import cross_val_score, StratifiedKFold
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from xgboost import XGBClassifier
-from sklearn.metrics import accuracy_score, classification_report
+import numpy as np
+from sklearn.metrics import roc_auc_score
 ```
 
 ---
 
 ## Submission Format
 
-CSV file with 418 rows (one per test passenger):
+CSV file with 259 columns (row_id + 258 species):
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `PassengerId` | Integer | Must match test.csv PassengerId (892-1309) |
-| `Survived` | Integer | Predicted value (0 = died, 1 = survived) |
+| `row_id` | String | Segment identifier |
+| `species_1` ... `species_N` | Float | Probability of species presence (0-1) |
 
 Example:
 ```csv
-PassengerId,Survived
-892,0
-893,1
-894,0
-...
+row_id,species_code_1,species_code_2,...
+soundscape_X_5,0.1,0.9,...
+soundscape_X_10,0.3,0.1,...
 ```
 
 ---
@@ -137,9 +119,9 @@ PassengerId,Survived
   - Use `serena` mcp when reading files to ensure proper handling.
 
 - **Absolute Requirement**: Before starting any task, ALWAYS review:
-  - `.references/COMPETITION.md` - Competition rules and historical context
-  - `.references/DATASET.md` - Feature descriptions and missing value details
-  - `.references/METRIC.md` - Accuracy metric and optimization strategies
+  - `.references/COMPETITION.md` - Competition rules and timeline
+  - `.references/DATASET.md` - Feature descriptions and data format
+  - `.references/METRIC.md` - ROC-AUC metric and optimization strategies
 
 - **Directory Roles**:
   - `ai-src/`: **AI Playground**. You have full freedom to create, edit, and experiment here. Use this for tasks unless instructed otherwise.
@@ -170,8 +152,6 @@ PassengerId,Survived
 
 ## Reference Links
 
-- [Kaggle Competition Page](https://www.kaggle.com/competitions/titanic)
-- [Official Titanic Tutorial](https://www.kaggle.com/code/alexisbcook/titanic-tutorial)
-- [Getting Started Guide](https://www.kaggle.com/code/alexisbcook/getting-started-with-titanic)
-- [Advanced Feature Engineering Tutorial](https://www.kaggle.com/code/gunesevitan/titanic-advanced-feature-engineering-tutorial)
-- [Missing Value Imputation Tutorial](https://www.kaggle.com/code/allohvk/titanic-missing-age-imputation-tutorial-advanced)
+- [Kaggle Competition Page](https://www.kaggle.com/competitions/birdclef-2026)
+- [BirdCLEF+ 2026 Data](https://www.kaggle.com/competitions/birdclef-2026/data)
+- [BirdCLEF+ 2026 Discussion](https://www.kaggle.com/competitions/birdclef-2026/discussion)

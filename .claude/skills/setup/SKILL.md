@@ -42,9 +42,9 @@ mkdir -p configs data/raw data/processed src/commons src/Solution1 src/Solution2
 Follow the instructions in `references/fetch-kaggle.md`.
 
 This will create:
-- `COMPETITION.md`
-- `DATASET.md`
-- `METRIC.md`
+- `.references/COMPETITION.md`
+- `.references/DATASET.md`
+- `.references/METRIC.md`
 
 **If no URL/name is provided:** Skip this step.
 
@@ -79,7 +79,7 @@ Provide guidance based on the result:
 
 This skill includes detailed procedures in `references/`:
 
-- **fetch-kaggle.md**: Complete guide for fetching competition information using agent-browser
+- **fetch-kaggle.md**: Complete guide for fetching competition information using Kaggle MCP or agent-browser
 - **create-claude-md.md**: Template and instructions for generating CLAUDE.md
 
 ## Usage Examples

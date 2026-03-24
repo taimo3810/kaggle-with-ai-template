@@ -1,22 +1,79 @@
 ---
-description: Research competition using agent-browser and create COMPETITION.md, DATASET.md, METRIC.md
-argument-hint: [competition-url]
+description: Research competition using Kaggle MCP or agent-browser, and create COMPETITION.md, DATASET.md, METRIC.md
+argument-hint: [competition-url-or-name]
 ---
 
 # Competition Research Setup
 
-Research the specified competition in detail using **agent-browser** to directly navigate and extract information from competition pages.
+Research the specified competition in detail and create reference documentation files.
 
 **Target Competition:** $ARGUMENTS
 
-## Supported Platforms
+## Supported Platforms & Methods
 
-| Platform | URL Pattern | Auth State File |
-|----------|-------------|-----------------|
-| **Guru Guru Science** | `https://www.guruguru.science/competitions/{id}` | `~/.config/guruguru-auth.json` |
-| **Kaggle** | `https://www.kaggle.com/competitions/{name}` | `~/.config/kaggle-auth.json` |
+| Platform | URL Pattern | Method |
+|----------|-------------|--------|
+| **Kaggle** | `https://www.kaggle.com/competitions/{name}` or just `{name}` | **Kaggle MCP** (preferred) |
+| **Guru Guru Science** | `https://www.guruguru.science/competitions/{id}` | agent-browser |
 
 ---
+
+## Method A: Kaggle MCP (Preferred for Kaggle)
+
+If the target is a Kaggle competition, use the Kaggle MCP tools directly:
+
+### 1. Get Competition Metadata
+
+```
+mcp__kaggle__get_competition({
+  request: { competitionName: "<competition-name>" }
+})
+```
+
+Extract: title, description, category, reward, deadline, evaluation_metric, max_daily_submissions, max_team_size, is_kernels_submissions_only.
+
+### 2. Get Data Files Summary
+
+```
+mcp__kaggle__get_competition_data_files_summary({
+  request: { competitionName: "<competition-name>" }
+})
+```
+
+### 3. List Data Files
+
+```
+mcp__kaggle__list_competition_data_files({
+  request: { competitionName: "<competition-name>", hasPageSize: true, pageSize: 50 }
+})
+```
+
+### 4. Search Discussions for Additional Info
+
+```
+mcp__kaggle__list_forum_topics({
+  request: { hasSearchQuery: true, searchQuery: "<competition-name>", sortBy: "Hot", category: "Competitions" }
+})
+```
+
+### 5. Create Documentation Files
+
+Based on the gathered information, create:
+- `.references/COMPETITION.md` - Competition overview, rules, constraints
+- `.references/DATASET.md` - Data structure, features, file descriptions
+- `.references/METRIC.md` - Evaluation metric, formula, implementation
+
+> **Rule**: Write **facts only**. Do NOT include opinions, recommendations, or tips.
+
+### 6. Validate with Actual Data
+
+If `data/raw/` exists, cross-check with actual files (same as Method B, Step 7).
+
+Skip to **Step 8** (Update CLAUDE.md).
+
+---
+
+## Method B: agent-browser (For non-Kaggle platforms)
 
 ## Instructions
 
@@ -120,7 +177,7 @@ Extract:
 
 ### 6. Create Documentation Files
 
-Based on the gathered information, create the following files:
+Based on the gathered information, create the following files.
 
 > **Rule**: Write **facts only** in each file. Do NOT include opinions, recommendations, tips, or general approaches.
 
@@ -142,7 +199,28 @@ Based on the gathered information, create the following files:
 - Formula (LaTeX format recommended)
 - Official implementation code (if provided)
 
-### 7. Update CLAUDE.md
+### 7. Validate and Supplement DATASET.md with Actual Data
+
+If `data/raw/` exists, read the actual data files and cross-check against the browser-scraped info:
+
+```python
+import pandas as pd, glob, os
+
+for path in glob.glob("data/raw/*.csv"):
+    df = pd.read_csv(path)
+    print(f"\n=== {os.path.basename(path)} ===")
+    print(df.info())
+    print(df.describe(include="all"))
+    print("Missing values:\n", df.isnull().sum())
+```
+
+Use the output to:
+- **Correct** any discrepancies between the competition page and the actual data (e.g., column names, data types)
+- **Supplement** missing information not on the competition page (e.g., actual missing value counts, real value ranges)
+
+Update `DATASET.md` with the corrected and supplemented facts.
+
+### 8. Update CLAUDE.md
 
 Update the `CLAUDE.md` file with:
 - Competition summary
@@ -150,7 +228,7 @@ Update the `CLAUDE.md` file with:
 - Technical recommendations
 - Metric implementation code
 
-### 8. Close Browser
+### 9. Close Browser
 
 ```bash
 agent-browser close

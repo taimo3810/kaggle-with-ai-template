@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv sync:*)",
+      "mcp__kaggle__get_competition",
+      "mcp__kaggle__get_competition_data_files_summary",
+      "mcp__kaggle__list_competition_data_files"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit:*.py|Write:*.py",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run ruff check --fix $CLAUDE_TOOL_INPUT_FILE_PATH && uv run ruff format $CLAUDE_TOOL_INPUT_FILE_PATH"
+          },
+          {
+            "type": "command",
+            "command": "uv run mypy $CLAUDE_TOOL_INPUT_FILE_PATH --ignore-missing-imports"
+          }
+        ]
+      }
+    ]
+  }
+}
