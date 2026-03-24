@@ -122,6 +122,8 @@ Extract:
 
 Based on the gathered information, create the following files:
 
+> **Rule**: Write **facts only** in each file. Do NOT include opinions, recommendations, tips, or general approaches.
+
 #### `COMPETITION.md`
 - Competition background and goal
 - Task type (Classification, Regression, Segmentation, etc.)
@@ -134,13 +136,11 @@ Based on the gathered information, create the following files:
 - Description of main features (columns)
 - Data notes (missing values, format, etc.)
 - File sizes
-- Data loading examples
 
 #### `METRIC.md`
 - Metric name and definition
 - Formula (LaTeX format recommended)
 - Official implementation code (if provided)
-- General approaches or tips for optimizing this metric
 
 ### 7. Update CLAUDE.md
 

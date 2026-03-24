@@ -21,7 +21,11 @@ Leverages Claude Code and MCP (Model Context Protocol) to support everything fro
 ## Quick Start
 
 1. **Clone & Install**
-   Clone the repository or use it as a template.
+   Clone the repository or use it as a template. You can specify a directory name to make the competition clear at a glance:
+   ```bash
+   git clone https://github.com/taimo3810/kaggle-with-ai-template.git titanic
+   cd titanic
+   ```
 
 2. **Run Setup Command**
    In Claude Code, run the setup command with your competition URL:
